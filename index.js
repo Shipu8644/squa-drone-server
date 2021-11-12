@@ -12,6 +12,7 @@ app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.om5y9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 async function run() {
     try {
         await client.connect();
@@ -43,12 +44,29 @@ async function run() {
 
         })
 
+        // getting all the orders Api
         app.get('/orders', async (req, res) => {
             const cursor = orderCollection.find({});
             const orders = await cursor.toArray();
             res.json(orders);
         })
 
+        // getting my orders Api
+        app.get('/myOrders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = orderCollection.find(query);
+            const orders = await cursor.toArray();
+            res.json(orders);
+        })
+
+        // deleting specific order Api
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await orderCollection.deleteOne(query);
+            res.json(item);
+        })
 
 
     } finally {
