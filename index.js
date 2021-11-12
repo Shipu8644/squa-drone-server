@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
 const port = process.env.PORT || 5000
@@ -17,11 +18,35 @@ async function run() {
         console.log("Database Connected Sucessfully");
         const database = client.db("squa_drone");
         const serviceCollection = database.collection("services");
+        const orderCollection = database.collection("orders");
 
+        //getting all the services api
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
             res.json(services);
+        })
+
+        //getting single service api
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const service = await serviceCollection.findOne(query);
+            res.json(service);
+        })
+
+        //Inserting Single order Api
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.json(result);
+
+        })
+
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({});
+            const orders = await cursor.toArray();
+            res.json(orders);
         })
 
 
