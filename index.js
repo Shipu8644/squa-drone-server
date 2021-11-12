@@ -20,8 +20,9 @@ async function run() {
         const database = client.db("squa_drone");
         const serviceCollection = database.collection("services");
         const orderCollection = database.collection("orders");
+        const reviewCollection = database.collection("reviews");
 
-        //getting all the services api
+        //getting all the services/products api
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
@@ -66,6 +67,21 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const item = await orderCollection.deleteOne(query);
             res.json(item);
+        })
+
+        //inserting a single review Api
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            console.log(review);
+            const result = await reviewCollection.insertOne(review);
+            res.json(result);
+        })
+
+        //getting all reviews Api
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const reviews = await cursor.toArray();
+            res.json(reviews);
         })
 
 
