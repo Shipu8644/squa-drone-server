@@ -73,7 +73,6 @@ async function run() {
         //inserting a single review Api
         app.post('/reviews', async (req, res) => {
             const review = req.body;
-            console.log(review);
             const result = await reviewCollection.insertOne(review);
             res.json(result);
         })
@@ -89,7 +88,6 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
-            console.log(result);
             res.json(result);
         })
 
@@ -103,7 +101,6 @@ async function run() {
                 $set: user
             };
             const result = await usersCollection.updateOne(filter, updateDoc, options);
-            console.log(result);
             res.json(result);
         })
 
@@ -133,7 +130,6 @@ async function run() {
             else {
                 isAdmin = false;
             }
-            console.log(isAdmin)
             res.json({ admin: isAdmin })
         })
 
