@@ -70,6 +70,22 @@ async function run() {
             res.json(item);
         })
 
+        // updating order status
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const order = req.body;
+
+            const updateDoc = {
+                $set: {
+                    status: order.status
+                }
+            }
+            const result = await orderCollection.updateOne(filter, updateDoc);
+            res.json(result);
+
+        })
+
         //inserting a single review Api
         app.post('/reviews', async (req, res) => {
             const review = req.body;
@@ -91,7 +107,7 @@ async function run() {
             res.json(result);
         })
 
-        //upserting googole sign in user to user database
+        //upserting google sign in user to user database
         app.put('/users', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
