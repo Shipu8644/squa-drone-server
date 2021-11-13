@@ -21,6 +21,7 @@ async function run() {
         const serviceCollection = database.collection("services");
         const orderCollection = database.collection("orders");
         const reviewCollection = database.collection("reviews");
+        const usersCollection = database.collection("users");
 
         //getting all the services/products api
         app.get('/services', async (req, res) => {
@@ -84,6 +85,57 @@ async function run() {
             res.json(reviews);
         })
 
+        //inserting register user to user database
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result);
+        })
+
+        //upserting googole sign in user to user database
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: user
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            console.log(result);
+            res.json(result);
+        })
+
+        // setting the user as an admin from makeAdmin
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email }
+
+            const updateDoc = {
+                $set: {
+                    role: "admin"
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        })
+
+        //Find out the admin and check it true for Admin route
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            else {
+                isAdmin = false;
+            }
+            console.log(isAdmin)
+            res.json({ admin: isAdmin })
+        })
 
     } finally {
         //   await client.close();
