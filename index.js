@@ -30,12 +30,29 @@ async function run() {
             res.json(services);
         })
 
+        //Add Single Service/product Api
+        app.post('/services', async (req, res) => {
+            const product = req.body;
+            const result = await serviceCollection.insertOne(product);
+            res.json(result);
+        })
+
         //getting single service api
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const service = await serviceCollection.findOne(query);
             res.json(service);
+        })
+
+        //delete a specific product/service api
+        app.delete('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            console.log(query);
+            const product = await serviceCollection.deleteOne(query);
+
+            res.json(product);
         })
 
         //Inserting Single order Api
